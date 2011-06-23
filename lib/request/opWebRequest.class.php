@@ -384,4 +384,19 @@ class opWebRequest extends sfWebRequest
 
     sfContext::getInstance()->getController()->redirect($url);
   }
+  
+  public function isSmartphone()
+  {
+    return $this->isAndroid() || $this->isIPhone();
+  }
+  
+  public function isAndroid()
+  {
+    return strpos($this->getHttpHeader('User-Agent'), 'Android')!==false;
+  }
+
+  public function isIPhone()
+  {
+    return strpos($this->getHttpHeader('User-Agent'), 'iPhone')!==false;
+  }
 }
