@@ -56,7 +56,8 @@ class setupActions extends sfActions
         $settings['dbhost'] = $install['dbhost'];
         $settings['dbname'] = $install['dbname'];
         
-        require_once sfConfig::get('sf_lib_dir').'/vendor/symfony/lib/plugins/sfDoctrinePlugin/lib/task/sfDoctrineBaseTask.class.php';
+        spl_autoload_register('setupActions::autoload');
+
         chdir(sfConfig::get('sf_root_dir'));
         
         $configuration = $this->getContext()->getConfiguration();
@@ -80,5 +81,13 @@ class setupActions extends sfActions
     }
     
     return sfView::INPUT;
+  }
+  
+  public static function autoload($class)
+  {
+    if(false !== strpos($class, 'Task'))
+    {
+      require_once sfConfig::get('sf_lib_dir').'/vendor/symfony/lib/plugins/sfDoctrinePlugin/lib/task/'.$class.'.class.php';
+    }
   }
 }
