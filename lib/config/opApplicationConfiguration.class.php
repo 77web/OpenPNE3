@@ -51,8 +51,8 @@ abstract class opApplicationConfiguration extends sfApplicationConfiguration
     $OpenPNE2Path = sfConfig::get('sf_lib_dir').$DS.'vendor'.$DS;  // ##PROJECT_LIB_DIR##/vendor/
     set_include_path($OpenPNE2Path.PATH_SEPARATOR.get_include_path());
     $result = parent::setup();
-
-    if (0 !== strpos(sfConfig::get('sf_task_name'), 'sfDoctrineBuild'))
+    
+    if ('setup' !== sfConfig::get('sf_environment') && 0 !== strpos(sfConfig::get('sf_task_name'), 'sfDoctrineBuild'))
     {
       $configCache = $this->getConfigCache();
       $file = $configCache->checkConfig('data/config/plugin.yml', true);
@@ -213,19 +213,18 @@ abstract class opApplicationConfiguration extends sfApplicationConfiguration
 
     $parameters['op_color']  = new opColorConfig();
 
-    $table = Doctrine::getTable('SnsTerm');
-    $application = sfConfig::get('sf_app');
-    if ($application == 'pc_backend')
+    if('setup' !== sfConfig::get('sf_environment'))
     {
+      $table = Doctrine::getTable('SnsTerm');
+      $application = sfConfig::get('sf_app');
+      if($application == 'pc_backend')
+      {
         $application = 'pc_frontend';
+      }
+      $table->configure(sfContext::getInstance()->getUser()->getCulture(), $application);
+      $parameters['op_term'] = $table;
+      sfOutputEscaper::markClassAsSafe('SnsTermTable');
     }
-    $table->configure(sfContext::getInstance()->getUser()->getCulture(), $application);
-    if (!$table['member'])
-    {
-      $table->configure('en', $application);
-    }
-    $parameters['op_term'] = $table;
-    sfOutputEscaper::markClassAsSafe('SnsTermTable');
 
     return $parameters;
   }
@@ -503,10 +502,8 @@ abstract class opApplicationConfiguration extends sfApplicationConfiguration
     $zendPath = sfConfig::get('sf_lib_dir').$DS.'vendor'.$DS;  // ##PROJECT_LIB_DIR##/vendor/
 
     set_include_path($zendPath.PATH_SEPARATOR.get_include_path());
-
-    require_once 'Zend/Loader/Autoloader.php';
-    Zend_Loader_Autoloader::getInstance()->setFallbackAutoloader(true);
-    
+    require_once 'Zend/Loader.php';
+    Zend_Loader::registerAutoLoad();
     self::$zendLoaded = true;
   }
 
@@ -517,9 +514,8 @@ abstract class opApplicationConfiguration extends sfApplicationConfiguration
       return true;
     }
 
-    Zend_Loader_Autoloader::resetInstance();
-    spl_autoload_unregister(array('Zend_Loader_Autoloader', 'autoload'));
-    
+    require_once 'Zend/Loader.php';
+    Zend_Loader::registerAutoLoad('Zend_Loader', false);
     self::$zendLoaded = false;
   }
 
@@ -552,16 +548,8 @@ abstract class opApplicationConfiguration extends sfApplicationConfiguration
 
   public function generateAppUrl($application, $parameters = array(), $absolute = false)
   {
-    if (is_array($parameters) && isset($parameters['sf_route']))
-    {
-      $route = $parameters['sf_route'];
-      unset($parameters['sf_route']);
-    }
-    else
-    {
-      list($route, $parameters) = sfContext::getInstance()->getController()
-        ->convertUrlStringToParameters($parameters);
-    }
+    list($route, $parameters) = sfContext::getInstance()->getController()
+      ->convertUrlStringToParameters($parameters);
 
     return $this->getAppRouting($application)->generate($route, $parameters, $absolute);
   }

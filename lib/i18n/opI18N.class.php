@@ -20,13 +20,17 @@ class opI18N extends sfI18N
   {
     parent::initialize($configuration, $cache, $options);
 
-    $application = sfConfig::get('sf_app');
-    if ($application == 'pc_backend')
+    if('setup' !== sfConfig::get('sf_environment'))
     {
-        $application = 'pc_frontend';
+      $this->terms = Doctrine::getTable('SnsTerm');
+      $application = sfConfig::get('sf_app');
+      if($application == 'pc_backend')
+      {
+          $application = 'pc_frontend';
+      }
+      $this->terms = Doctrine::getTable('SnsTerm');
+      $this->terms->configure($this->culture, $application);
     }
-    $this->terms = Doctrine::getTable('SnsTerm');
-    $this->terms->configure($this->culture, $application);
   }
 
   public function generateApplicationMessages($dirs)
@@ -50,7 +54,7 @@ class opI18N extends sfI18N
       $messageSource = sfMessageSource::factory('OpenPNE', array());
       $data = $messageSource->loadData($file);
 
-      $catalogues[$name] = array_merge($data, $catalogues[$name]);
+      $catalogues[$name] = array_merge($catalogues[$name], $data);
     }
 
     $cacheDir = sfConfig::get('sf_app_cache_dir').DIRECTORY_SEPARATOR.'i18n';
@@ -103,7 +107,7 @@ class opI18N extends sfI18N
 
   public function __($string, $args = array(), $catalogue = 'messages')
   {
-    if (empty($this->parsed[$string]))
+    if (empty($parsed[$string]))
     {
       $this->parsed[$string] = array();
 

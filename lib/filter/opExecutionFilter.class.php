@@ -150,11 +150,15 @@ class opExecutionFilter extends sfExecutionFilter
 
     self::notifyPreExecuteActionEvent($this, $dispatcher, $actionInstance);
 
-    Doctrine::getTable('SnsTerm')->configure(sfContext::getInstance()->getUser()->getCulture(), sfConfig::get('sf_app'));
-
-    if (sfConfig::has('op_is_use_captcha'))
+    
+    if('setup' !== sfConfig::get('sf_environment'))
     {
-      sfConfig::set('op_is_use_captcha', opConfig::get('is_use_captcha'));
+      Doctrine::getTable('SnsTerm')->configure(sfContext::getInstance()->getUser()->getCulture(), sfConfig::get('sf_app'));
+
+      if (sfConfig::has('op_is_use_captcha'))
+      {
+        sfConfig::set('op_is_use_captcha', opConfig::get('is_use_captcha'));
+      }
     }
 
     try

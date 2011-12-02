@@ -13,11 +13,14 @@ class myUser extends opBaseSecurityUser
   public function initialize(sfEventDispatcher $dispatcher, sfStorage $storage, $options = array())
   {
     parent::initialize($dispatcher, $storage, $options);
-
-    $adminUserId = Doctrine::getTable('AdminUser')->find($this->getId());
-    if (!$adminUserId)
+    
+    if('setup' !== sfConfig::get('sf_environment'))
     {
-      $this->logout();
+      $adminUserId = Doctrine::getTable('AdminUser')->find($this->getId());
+      if (!$adminUserId)
+      {
+        $this->logout();
+      }
     }
   }
 
