@@ -42,7 +42,17 @@ class setupActions extends sfActions
         $fileSystem->copy($root.'/config/OpenPNE.yml.sample', $root.'/config/OpenPNE.yml');
         $fileSystem->copy($root.'/config/ProjectConfiguration.class.php.sample', $root.'/config/ProjectConfiguration.class.php');
         
-        //PENDING: create plugins.yml here
+        $plugins = $this->form->getAllPluginList();
+        $selectedPlugins = (array)$install['plugins'];
+        $pergedPlugins = array();
+        foreach($plugins as $name)
+        {
+          if(!in_array($name, $selectedPlugins))
+          {
+            $pergedPlugins[$name] = array('install'=>false);
+          }
+        }
+        file_put_contents(sfConfig::get('sf_config_dir').'/plugins.yml', sfYaml::dump($pergedPlugins));
         
         //PENDING: reflect first administrator settings. update fixture
         
@@ -67,6 +77,9 @@ class setupActions extends sfActions
         
         $this->getUser()->setAttribute('setup_install', null);
         $this->getUser()->setFlash('notice', 'Install complete!');
+        
+        //PENDING: remove config/setup.txt here
+        //$filesystem->remove(sfConfig::get('sf_config_dir').'/setup.txt');
         
         $this->redirect('/pc_backend.php');
       }
