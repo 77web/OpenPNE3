@@ -17,17 +17,33 @@ class setupActions extends sfActions
   
   public function executeInstall(sfWebRequest $request)
   {
+    
     $this->form = new OpenPNEInstallForm();
     
     if($request->isMethod(sfRequest::POST))
     {
       if($this->getUser()->getAttribute('setup_install'))
       {
-        $request->checkCSRFProtection();
+        try
+        {
+          $request->checkCSRFProtection();
+        }
+        catch(Exception $e)
+        {
+          $this->getUser()->setAttribute('setup_install');
+          $this->redirect('/setup.php/setup');
+        }
         
-        //PENDING: create config/OpenPNE.yml here
-        //PENDING: create config/ProjectConfiguration.class.php here
+        $fileSystem = new sfFileSystem();
+        $root = sfConfig::get('sf_root_dir');
+        //PENDING: receive manual setting and reflect it to config/OpenPNE.yml
+        $fileSystem->copy($root.'/config/OpenPNE.yml.sample', $root.'/config/OpenPNE.yml');
+        $fileSystem->copy($root.'/config/ProjectConfiguration.class.php.sample', $root.'/config/ProjectConfiguration.class.php');
+        
+        //PENDING: create plugins.yml here
+        
         //PENDING: run fast-install command here
+        
         
         $this->getUser()->setAttribute('setup_install', null);
         $this->getUser()->setFlash('notice', 'Install complete!');
