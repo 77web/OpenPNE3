@@ -4,7 +4,7 @@ class setupActions extends sfActions
 {
   public function preExecute()
   {
-    if(file_exists(sfConfig::get('sf_root_dir').'/ProjectConfiguration.class.php'))
+    if('setup' !== sfConfig::get('sf_environment'))
     {
       $this->redirect('@homepage');
     }
@@ -34,6 +34,8 @@ class setupActions extends sfActions
           $this->redirect('/setup.php/setup');
         }
         
+        $install = $this->getUser()->getAttribute('setup_install');
+        
         $fileSystem = new sfFileSystem();
         $root = sfConfig::get('sf_root_dir');
         //PENDING: receive manual setting and reflect it to config/OpenPNE.yml
@@ -42,8 +44,25 @@ class setupActions extends sfActions
         
         //PENDING: create plugins.yml here
         
-        //PENDING: run fast-install command here
+        //PENDING: reflect first administrator settings. update fixture
         
+        //PENDING: reflect first user settings. update fixture
+        
+        //PENDING: run fast-install command here
+        $settings = array();
+        $settings['dbms'] = $install['dbms'];
+        $settings['dbuser'] = $install['dbuser'];
+        $settings['dbpassword'] = $install['dbpass'];
+        $settings['dbhost'] = $install['dbhost'];
+        $settings['dbname'] = $install['dbname'];
+        
+        require_once sfConfig::get('sf_lib_dir').'/vendor/symfony/lib/plugins/sfDoctrinePlugin/lib/task/sfDoctrineBaseTask.class.php';
+        chdir(sfConfig::get('sf_root_dir'));
+        
+        $configuration = $this->getContext()->getConfiguration();
+        $dispatcher = $configuration->getEventDispatcher();
+        $task = new OpenPNEFastInstallTask($dispatcher, new sfFormatter());
+        $task->run(array(), $settings);
         
         $this->getUser()->setAttribute('setup_install', null);
         $this->getUser()->setFlash('notice', 'Install complete!');
