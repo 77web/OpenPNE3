@@ -21,6 +21,9 @@ class OpenPNEInstallForm extends BaseForm
     $this->setWidget('dbname', new sfWidgetFormInput(array('default'=>'openpne')));
     $this->setValidator('dbname', new sfValidatorString());
     
+    //validate database settings
+    $this->mergePostValidator(new sfValidatorCallback(array('callback'=>array($this, 'validateConnection'))));
+    
     //first administrator settings
     $this->setWidget('first_admin_username', new sfWidgetFormInput(array('default'=>'admin')));
     $this->setValidator('first_admin_username', new sfValidatorString());
@@ -36,7 +39,7 @@ class OpenPNEInstallForm extends BaseForm
     
     //plugins
     $plugins = array('opAuthMailAddressPlugin'=>'opAuthMailAddressPlugin', 'opCommunityTopicPlugin'=>'opCommunityTopicPlugin', 'opDiaryPlugin'=>'opDiaryPlugin'); //PENDING: get list of bundled plugins
-    $this->setWidget('plugins', new sfWidgetFormChoice(array('expanded'=>true, 'multiple'=>true, 'choices'=>$plugins)));
+    $this->setWidget('plugins', new sfWidgetFormChoice(array('expanded'=>true, 'multiple'=>true, 'choices'=>$plugins, 'default'=>array_keys($plugins))));
     $this->setValidator('plugins', new sfValidatorChoice(array('multiple'=>true, 'choices'=>array_keys($plugins))));
     
     
@@ -48,5 +51,11 @@ class OpenPNEInstallForm extends BaseForm
   public function getName()
   {
     return 'install';
+  }
+  
+  public function validateConnection($validator, $values, $arguments = array())
+  {
+    //PENDING: validate connection here
+    return $values;
   }
 }
