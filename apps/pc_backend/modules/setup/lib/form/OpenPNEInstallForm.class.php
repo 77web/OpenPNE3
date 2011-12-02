@@ -38,7 +38,7 @@ class OpenPNEInstallForm extends BaseForm
     $this->setValidator('first_user_password', new sfValidatorString());
     
     //plugins
-    $plugins = array('opAuthMailAddressPlugin'=>'opAuthMailAddressPlugin', 'opCommunityTopicPlugin'=>'opCommunityTopicPlugin', 'opDiaryPlugin'=>'opDiaryPlugin'); //PENDING: get list of bundled plugins
+    $plugins = $this->getAllPluginList();
     $this->setWidget('plugins', new sfWidgetFormChoice(array('expanded'=>true, 'multiple'=>true, 'choices'=>$plugins, 'default'=>array_keys($plugins))));
     $this->setValidator('plugins', new sfValidatorChoice(array('multiple'=>true, 'choices'=>array_keys($plugins))));
     
@@ -57,5 +57,23 @@ class OpenPNEInstallForm extends BaseForm
   {
     //PENDING: validate connection here
     return $values;
+  }
+  
+  //plugins.yml作成時にも利用するためpublicで
+  public function getAllPluginList()
+  {
+    require sfConfig::get('sf_data_dir').'/version.php';
+    $url = opPluginManager::getPluginListBaseUrl().OPENPNE_VERSION.'.yml';
+    $list = sfYaml::load(file_get_contents($url));
+    
+    $plugins = array();
+    if(is_array($list))
+    {
+      foreach($list as $name => $data)
+      {
+        $plugins[$name] = $name;
+      }
+    }
+    return $plugins;
   }
 }
