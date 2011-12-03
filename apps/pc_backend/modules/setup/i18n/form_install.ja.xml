@@ -1,0 +1,69 @@
+<?xml version="1.0" ?>
+<xliff version="1.0">
+  <file original="global" source-language="en" datatype="plaintext">
+    <body>
+      <trans-unit id="1">
+        <source>Input your server info</source>
+        <target>サーバー情報入力</target>
+      </trans-unit>
+      <trans-unit id="2">
+        <source>Confirm your server info</source>
+        <target>サーバー情報確認</target>
+      </trans-unit>
+      <trans-unit id="3">
+        <source>Confirm</source>
+        <target>入力内容の確認</target>
+      </trans-unit>
+      <trans-unit id="4">
+        <source>Do install</source>
+        <target>インストール実行</target>
+      </trans-unit>
+      <trans-unit id="5">
+        <source>Are you sure?</source>
+        <target>インストールを実行します。宜しいですか？</target>
+      </trans-unit>
+
+      <trans-unit id="10">
+        <source>Dbms</source>
+        <target>データベース種類</target>
+      </trans-unit>
+      <trans-unit id="11">
+        <source>Dbhost</source>
+        <target>データベースホスト名</target>
+      </trans-unit>
+      <trans-unit id="12">
+        <source>Dbname</source>
+        <target>データベース名</target>
+      </trans-unit>
+      <trans-unit id="13">
+        <source>Dbuser</source>
+        <target>データベース接続ユーザー名</target>
+      </trans-unit>
+      <trans-unit id="14">
+        <source>Dbpass</source>
+        <target>データベース接続パスワード</target>
+      </trans-unit>
+      <trans-unit id="15">
+        <source>First admin username</source>
+        <target>最初の管理者のログイン名</target>
+      </trans-unit>
+      <trans-unit id="16">
+        <source>First admin password</source>
+        <target>最初の管理者のパスワード</target>
+      </trans-unit>
+      <trans-unit id="17">
+        <source>First user email</source>
+        <target>最初のユーザーのメールアドレス</target>
+      </trans-unit>
+      <trans-unit id="18">
+        <source>First user password</source>
+        <target>最初のユーザーのパスワード</target>
+      </trans-unit>
+      <trans-unit id="19">
+        <source>Plugins</source>
+        <target>インストールするプラグイン</target>
+      </trans-unit>
+
+    </body>
+  </file>
+</xliff>
