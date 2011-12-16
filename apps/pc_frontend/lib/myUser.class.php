@@ -10,4 +10,25 @@
 
 class myUser extends opSecurityUser
 {
+  
+  public function initialize(sfEventDispatcher $dispatcher, sfStorage $storage, $options = array())
+  {
+    parent::initialize($dispatcher, $storage, $options);
+    
+    if(sfContext::getInstance()->getRequest()->hasParameter('op_layout'))
+    {
+      $layout = sfContext::getInstance()->getRequest()->getParameter('op_layout')=='pc' ? 'pc' : 'smartphone';
+      $this->setPreferredLayout($layout);
+    }
+  }
+
+  public function setPreferredLayout($layout = 'pc')
+  {
+    $this->setAttribute('preferred_layout', $layout);
+  }
+  
+  public function getPreferredLayout()
+  {
+    return $this->getAttribute('preferred_layout', sfContext::getInstance()->getRequest()->isSmartphone() ? 'smartphone' : 'pc');
+  }
 }

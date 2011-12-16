@@ -2,10 +2,27 @@
 <html xmlns="http://www.w3.org/1999/xhtml" dir="ltr">
 <head>
 <?php include_http_metas() ?>
-<?php include_metas() ?>
+<?php
+//add viewport tag here?
+include_metas() ?>
 <?php include_title() ?>
-<?php include_stylesheets() ?>
-<?php include_javascripts() ?>
+<?php
+$pluginManager = new opInstalledPluginManager();
+foreach($pluginManager->getInstalledSkinPlugins() as $_plugin)
+{
+  if($_plugin->getIsActive())
+  {
+    $skinPlugin = $_plugin;
+    break;
+  }
+}
+$skinPluginName = $skinPlugin->getName();
+sfContext::getInstance()->getResponse()->removeStylesheet('/'.$skinPluginName.'/css/main.css');
+sfContext::getInstance()->getResponse()->addStylesheet('/'.$skinPluginName.'/css/sp.css');
+include_stylesheets() ?>
+<?php
+//add jquery.mobile here?
+include_javascripts() ?>
 <?php if (Doctrine::getTable('SnsConfig')->get('customizing_css')): ?>
 <link rel="stylesheet" type="text/css" href="<?php echo url_for('@customizing_css') ?>" />
 <?php endif; ?>
