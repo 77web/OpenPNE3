@@ -59,4 +59,29 @@ class opMailRequest extends opWebRequest
   {
     return self::$mailMessage;
   }
+
+  public function getImageFiles($num = null)
+  {
+    $files = array();
+
+    $images = self::$mailMessage->getImages();
+
+    $i = 1;
+    foreach ($images as $image)
+    {
+      if (null !== $num && $i > $num) break;
+
+      $validator = new opValidatorImageFile();
+      $validFile = $validator->clean($image);
+
+      $file = new File();
+      $file->setFromValidatedFile($validFile);
+
+      $files[] = $file;
+      $i++;
+    }
+
+    return $files;
+  }
+}
 }
