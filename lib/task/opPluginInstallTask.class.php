@@ -82,6 +82,15 @@ EOF;
       $options['channel'] = opPluginManager::getDefaultPluginChannelServerName();
     }
     $manager = $this->getPluginManager($options['channel']);
+    
+    $path = sfConfig::get('sf_plugins_dir').'/'.$arguments['name'];
+    if (file_exists($path) && !is_dir($path))
+    {
+      $options['force-license'] = true;
+      
+      $manager->installPlugin($path, $options);
+      return;
+    }
 
     if (sfConfig::get('op_http_proxy'))
     {
