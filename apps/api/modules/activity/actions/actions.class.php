@@ -188,26 +188,40 @@ class activityActions extends opJsonApiActions
 
     $options['source'] = 'API';
 
-    $imageFile = $request->getFiles('images');
-    if (!empty($imageFile))
-    {   
-      $validator = new opValidatorImageFile(array('required' => false));
-      try 
-      {   
-        $obj = $validator->clean($imageFile);
-      }   
-      catch (sfValidatorError $e) 
-      {   
-        $this->forward400('This image file is invalid.');
-      }   
-      $file = new File();
-      $file->setFromValidatedFile($obj);
-      $file->setName('ac_'.$this->getUser()->getMemberId().'_'.$file->getName());
-      $file->save();
-      $options['images'][] = array('file_id' => $file->getId());
-    }   
+    $imageFiles = $request->getFiles('images');
+    if (!empty($imageFiles))
+    {
+      foreach ((array)$imageFiles as $imageFile)
+      {
+        $validator = new opValidatorImageFile(array('required' => false));
+        try
+        {
+          $obj = $validator->clean($imageFile);
+        }
+        catch (sfValidatorError $e)
+        {
+          $this->forward400('This image file is invalid.');
+        }
+        if (is_null($obj))
+        {
+          continue;
+        }
+        $file = new File();
+        $file->setFromValidatedFile($obj);
+        $file->setName('ac_'.$this->getUser()->getMemberId().'_'.$file->getName());
+        $file->save();
+        $options['images'][] = array('file_id' => $file->getId());
+      }
+    }
 
     $this->activity = Doctrine::getTable('ActivityData')->updateActivity($memberId, $body, $options);
+
+    if ('1' === $request['forceHtml'])
+    {
+      // workaround for some browsers (see #3201)
+      $this->getRequest()->setRequestFormat('html');
+      $this->getResponse()->setContentType('text/html');
+    }
 
     $this->setTemplate('object');
   }
