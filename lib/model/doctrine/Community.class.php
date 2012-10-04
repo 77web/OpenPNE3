@@ -89,13 +89,9 @@ class Community extends BaseCommunity implements opAccessControlRecordInterface
 
   public function getMembers($limit = null, $isRandom = false)
   {
-    $communityMembers = Doctrine::getTable('CommunityMember')->createQuery()
+    $q = Doctrine::getTable('CommunityMember')->createQuery()
       ->where('community_id = ?', $this->id)
-      ->andWhere('is_pre = ?', false)
-      ->execute();
-
-    $q = Doctrine::getTable('Member')->createQuery()
-      ->whereIn('id', array_values($communityMembers->toKeyValueArray('id', 'member_id')));
+      ->andWhere('is_pre = ?', false);
 
     if (!is_null($limit))
     {
@@ -108,7 +104,8 @@ class Community extends BaseCommunity implements opAccessControlRecordInterface
       $q->orderBy($expr);
     }
 
-    return $q->execute();
+    return Doctrine::getTable('Member')->createQuery()
+      ->whereIn('id', array_values($q->toKeyValueArray('id', 'member_id')))->execute();
   }
 
   public function getAdminMember()
