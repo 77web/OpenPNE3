@@ -27,7 +27,7 @@ abstract class opMemberComponents extends sfComponents
 
   public function executeAllMemberActivityBox(sfWebRequest $request)
   {
-    $this->activities = Doctrine::getTable('ActivityData')->getAllMemberActivityList($this->gadget->getConfig('row'));
+    $this->activities = Doctrine::getTable('ActivityData')->getAllMemberActivityList($this->gadget->getConfig('row'), $this->getUser()->getMemberId());
     if ($this->gadget->getConfig('is_viewable_activity_form') && opConfig::get('is_allow_post_activity'))
     {
       $this->form = new ActivityDataForm();

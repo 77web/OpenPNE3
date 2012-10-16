@@ -143,13 +143,41 @@ $t->diag('ActivityDataTable::getAllMemberActivityList()');
 $result = $table->getAllMemberActivityList();
 $t->isa_ok($result, 'Doctrine_Collection', '->getAllMemberActivityList() returns instance of Doctrine_Collection');
 $t->is(count($result), 5, '->getAllMemberActivityList() returns Doctrine_Collection that consists 5');
+Doctrine_Query::create()->delete()->from('ActivityData')->where('id > 13')->execute();
+$resultForFirstMember = $table->getAllMemberActivityList(10, 1);
+$t->isa_ok($resultForFirstMember, 'Doctrine_Collection');
+$t->is(count($resultForFirstMember), 10);
+$idList1 = array();
+foreach ($resultForFirstMember as $activity)
+{
+  $idList1[] = $activity->getId();
+}
+$t->ok(in_array(9, $idList1), 'contains second_member\'s friend-only activity');
+$t->ok(!in_array(10, $idList1), 'does not contain second_member\'s private activity');
+$t->ok(in_array(11, $idList1), 'contains third_member\'s all-member activity');
+$t->ok(in_array(12, $idList1), 'contains third_member\'s open activity');
+$t->ok(!in_array(13, $idList1), 'does not contain thrid_member\'s friend-only activity');
 
 $t->diag('ActivityDataTable::getAllMemberActivityListPager()');
 $result = $table->getAllMemberActivityListPager();
 $t->isa_ok($result, 'sfDoctrinePager', '->getAllMemberActivityListPager() returns instance of sfDoctrinePager');
+$pagerForFirstMember = $table->getAllMemberActivityListPager(1, 10, 1);
+$t->isa_ok($pagerForFirstMember, 'sfDoctrinePager');
+$t->is($pagerForFirstMember->getNbResults(), 11);
+$t->is(count($pagerForFirstMember->getResults()), 10);
+$idList2 = array();
+foreach ($pagerForFirstMember->getResults() as $activity)
+{
+  $idList2[] = $activity->getId();
+}
+$t->ok(in_array(9, $idList2), 'contains second_member\'s friend-only activity');
+$t->ok(!in_array(10, $idList2), 'does not contain second_member\'s private activity');
+$t->ok(in_array(11, $idList2), 'contains third_member\'s all-member activity');
+$t->ok(in_array(12, $idList2), 'contains third_member\'s open activity');
+$t->ok(!in_array(13, $idList2), 'does not contain thrid_member\'s friend-only activity');
 
 $t->diag('->addAllMemberActivityQuery()');
-$query = Doctrine::getTable('ActivityData')->createQuery()->orderBy('created_at DESC')->where('id < 14');
+$query = Doctrine::getTable('ActivityData')->createQuery()->orderBy('created_at DESC');
 Doctrine::getTable('ActivityData')->addAllMemberActivityQuery($query, true, 1);
 $t->is($query->count(), 11, '11 activities found');
 $idList = array();

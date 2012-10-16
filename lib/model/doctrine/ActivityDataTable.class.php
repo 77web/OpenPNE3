@@ -392,10 +392,10 @@ class ActivityDataTable extends Doctrine_Table
     return $q;
   }
 
-  public function getAllMemberActivityList($limit = 5, $isCheckApp = true)
+  public function getAllMemberActivityList($limit = 5, $memberId = null, $isCheckApp = true)
   {
     $q = $this->getOrderdQuery();
-    $this->addAllMemberActivityQuery($q, $isCheckApp);
+    $this->addAllMemberActivityQuery($q, $isCheckApp, $memberId);
     if (!is_null($limit))
     {
       $q->limit($limit);
@@ -404,10 +404,10 @@ class ActivityDataTable extends Doctrine_Table
     return $q->execute();
   }
 
-  public function getAllMemberActivityListPager($page = 1, $size = 20, $isCheckApp = true)
+  public function getAllMemberActivityListPager($page = 1, $size = 20, $memberId = null, $isCheckApp = true)
   {
     $q = $this->getOrderdQuery();
-    $this->addAllMemberActivityQuery($q, $isCheckApp);
+    $this->addAllMemberActivityQuery($q, $isCheckApp, $memberId);
 
     return $this->getPager($q, $page, $size);
   }

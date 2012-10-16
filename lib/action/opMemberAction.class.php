@@ -577,6 +577,6 @@ abstract class opMemberAction extends sfActions
       $this->form = new ActivityDataForm($activityData);
     }
 
-    $this->pager = Doctrine::getTable('ActivityData')->getAllMemberActivityListPager($page, $this->size);
+    $this->pager = Doctrine::getTable('ActivityData')->getAllMemberActivityListPager($page, $this->size, $this->getUser()->getMemberId());
   }
 }
