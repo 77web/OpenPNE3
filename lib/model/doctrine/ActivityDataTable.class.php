@@ -366,9 +366,16 @@ class ActivityDataTable extends Doctrine_Table
     return $this->getPager($q, $page, $size);
   }
 
-  public function addAllMemberActivityQuery($q, $isCheckApp = true)
+  public function addAllMemberActivityQuery($q, $isCheckApp = true, $memberId = null)
   {
-    $q->whereIn('public_flag', array(self::PUBLIC_FLAG_OPEN, self::PUBLIC_FLAG_SNS));
+    if (!is_null($memberId))
+    {
+      $q->addWhere('public_flag = ? OR public_flag = ? OR member_id = ? OR (public_flag = ? AND member_id IN (SELECT mr.member_id_to FROM MemberRelationship mr WHERE mr.member_id_from = ? AND mr.is_friend = ?))', array(self::PUBLIC_FLAG_OPEN, self::PUBLIC_FLAG_SNS, $memberId, self::PUBLIC_FLAG_FRIEND, $memberId, true));
+    }
+    else
+    {
+      $q->whereIn('public_flag', array(self::PUBLIC_FLAG_OPEN, self::PUBLIC_FLAG_SNS));
+    }
 
     if ($isCheckApp)
     {

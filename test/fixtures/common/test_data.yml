@@ -948,6 +948,32 @@ ActivityData:
     Member: first_member
     body: "dummy8"
     template: "xxxx_template"
+  dummy_activity_friend_only_by_second_member:
+    id: 9
+    Member: second_member
+    body: "dummy9"
+    public_flag: 2
+  dummy_activity_private_by_second_member:
+    id: 10
+    Member: second_member
+    body: "dummy10"
+    public_flag: 3
+  dummy_activity_open_by_third_member:
+    id: 11
+    Member: third_member
+    body: "dummy11"
+    public_flag: 0
+  dummy_activity_all_member_by_third_member:
+    id: 12
+    Member: third_member
+    body: "dummy12"
+    public_flag: 1
+  dummy_activity_friend_only_by_third_member:
+    id: 13
+    Member: third_member
+    body: "dummy13"
+    public_flag: 2
+
 
 SnsTerm:
   term_friend_pc_frontend:

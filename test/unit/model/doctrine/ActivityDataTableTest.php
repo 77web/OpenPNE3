@@ -9,7 +9,7 @@ $user = sfContext::getInstance()->getUser();
 $user->setAuthenticated(true);
 $user->setMemberId(1);
 
-$t = new lime_test(40, new lime_output_color());
+$t = new lime_test(null, new lime_output_color());
 $table = Doctrine::getTable('ActivityData');
 
 //------------------------------------------------------------
@@ -147,6 +147,23 @@ $t->is(count($result), 5, '->getAllMemberActivityList() returns Doctrine_Collect
 $t->diag('ActivityDataTable::getAllMemberActivityListPager()');
 $result = $table->getAllMemberActivityListPager();
 $t->isa_ok($result, 'sfDoctrinePager', '->getAllMemberActivityListPager() returns instance of sfDoctrinePager');
+
+$t->diag('->addAllMemberActivityQuery()');
+$query = Doctrine::getTable('ActivityData')->createQuery()->orderBy('created_at DESC')->where('id < 14');
+Doctrine::getTable('ActivityData')->addAllMemberActivityQuery($query, true, 1);
+$t->is($query->count(), 11, '11 activities found');
+$idList = array();
+foreach( $query->select('id')->execute() as $row)
+{
+  $idList[] = $row->getId();
+}
+$t->ok(in_array(3, $idList), 'contains first_member\'s friend-only activity');
+$t->ok(in_array(4, $idList), 'contains first_member\'s private activity');
+$t->ok(in_array(9, $idList), 'contains second_member\'s friend-only activity');
+$t->ok(!in_array(10, $idList), 'does not contain second_member\'s private activity');
+$t->ok(in_array(11, $idList), 'contains third_member\'s all-member activity');
+$t->ok(in_array(12, $idList), 'contains third_member\'s open activity');
+$t->ok(!in_array(13, $idList), 'does not contain thrid_member\'s friend-only activity');
 
 $t->diag('ActivityDataTable::getTemplateConfig()');
 $result = $table->getTemplateConfig();
